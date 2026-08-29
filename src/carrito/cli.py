@@ -19,11 +19,21 @@ def main():
     elegido = pedido(args.pedido)
     elegido.promociones = [p for p in elegido.promociones if p not in args.sin]
     if args.detalle:
-        for linea in elegido.lineas:
-            print(linea.producto.nombre, "x", linea.cantidad, precio_linea(linea))
+        detalle = [
+            (f"{linea.producto.nombre} x {linea.cantidad}", precio_linea(linea))
+            for linea in elegido.lineas
+        ]
+        _imprimir_alineado(detalle)
         print("-")
-    for etiqueta, monto in resumen(elegido).items():
-        print(etiqueta, monto)
+    _imprimir_alineado(list(resumen(elegido).items()))
+
+
+def _imprimir_alineado(lineas: list[tuple[str, int]]):
+    """Imprime pares etiqueta/monto con el monto alineado a la derecha."""
+    ancho_etiqueta = max(len(etiqueta) for etiqueta, _ in lineas)
+    ancho_monto = max(len(str(monto)) for _, monto in lineas)
+    for etiqueta, monto in lineas:
+        print(f"{etiqueta:<{ancho_etiqueta}} {monto:>{ancho_monto}}")
 
 
 if __name__ == "__main__":
